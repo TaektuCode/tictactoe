@@ -1,4 +1,5 @@
-let fields = [null, "circle", null, "cross", null, null, null, null, null];
+let fields = [null, null, null, null, null, null, null, null, null];
+let currentPlayer = "circle"; // Startplayer
 
 function init() {
   render();
@@ -14,18 +15,40 @@ function render() {
     for (let j = 0; j < 3; j++) {
       const index = i * 3 + j;
       let symbol = "";
+
       if (fields[index] === "circle") {
         symbol = generateCircleSVG();
       } else if (fields[index] === "cross") {
         symbol = generateCrossSVG();
       }
-      tableHtml += `<td>${symbol}</td>`;
+
+      // Add onclick only if the field is empty
+      const onclick =
+        fields[index] === null ? `onclick="handleClick(${index}, this)"` : "";
+
+      tableHtml += `<td ${onclick}>${symbol}</td>`;
     }
     tableHtml += "</tr>";
   }
   tableHtml += "</table>";
 
   contentDiv.innerHTML = tableHtml;
+}
+
+function handleClick(index, tdElement) {
+  // Update the fields array
+  fields[index] = currentPlayer;
+
+  // Add the corresponding symbol to the clicked cell
+  const symbolHtml =
+    currentPlayer === "circle" ? generateCircleSVG() : generateCrossSVG();
+  tdElement.innerHTML = symbolHtml;
+
+  // Remove the onclick attribute
+  tdElement.onclick = null;
+
+  // Switch the player
+  currentPlayer = currentPlayer === "circle" ? "cross" : "circle";
 }
 
 function generateCircleSVG() {
@@ -45,7 +68,7 @@ function generateCrossSVG() {
   const width = 70;
   const height = 70;
 
-  const svgHtml = `
+  return `
       <svg width="${width}" height="${height}">
         <line x1="0" y1="0" x2="${width}" y2="${height}"
           stroke="${color}" stroke-width="5">
@@ -59,6 +82,4 @@ function generateCrossSVG() {
         </line>
       </svg>
     `;
-
-  return svgHtml;
 }
